@@ -123,6 +123,9 @@ if Log4p.root:
     root = Log4p.root
 else:
     root = Log4p('root')
+for h in root.handlers[:]:
+    root.removeHandler(h)
+    h.close()
 Log4p.root = root
 Log4p.manager = logging.Manager(Log4p.root)
 Log4p.manager.setLoggerClass(Log4p)
@@ -153,20 +156,10 @@ if not root.handlers:
         # formatter
         formatter = logging.Formatter('%(asctime)s.%(msecs)d000 %(levelname)s %(name)s.%(funcName)s:%(lineno)d [%(threadName)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         # handlers
-#         file_handler = handlers.TimedRotatingFileHandler('log4p.log', when='midnight', backupCount=30)
-#         file_handler.setFormatter(formatter)
         stream_handler = logging.StreamHandler(stream=sys.stdout)
         stream_handler.setFormatter(formatter)
         # add the handlers to the logger
         root.addHandler(stream_handler)
-#         root.addHandler(file_handler)
         get(__name__).debug('Failed to parse log config: %s' % log_config)
         get(__name__).debug('ERROR: %s' % str(e), exc_info=True)
         get(__name__).info('Using DEFAULT config properties in %s.' % inspect.getmodulename(__file__))
-        # sub-logger
-#         sublogger = get('requests.packages.urllib3.connectionpool')
-#         sublogger.setLevel(logging.WARN)
-#         print logging.getLoggerClass()
-#         sublogger.propagate = 0
-#         sublogger.addHandler(stream_handler)
-#         sublogger.addHandler(file_handler)
